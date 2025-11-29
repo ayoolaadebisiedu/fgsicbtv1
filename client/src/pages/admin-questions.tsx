@@ -79,7 +79,7 @@ export default function AdminQuestions() {
       const headerParts = lines[0].split(",").map((p) => p.trim());
       const hasHeader = headerParts.some((h) => /question/i.test(h) || /questionText/i.test(h) || /question_text/i.test(h));
       const startIndex = hasHeader ? 1 : 0;
-      const cols = hasHeader ? headerParts : ["questionText","questionType","difficulty","options","correctAnswer","points"];
+      const cols = hasHeader ? headerParts : ["questionText", "questionType", "difficulty", "options", "correctAnswer", "points"];
       for (let i = startIndex; i < lines.length; i++) {
         const parts = lines[i].split(",").map((p) => p.trim());
         if (parts.length === 0) continue;
@@ -150,6 +150,7 @@ export default function AdminQuestions() {
     setCsvClassLevel("");
     setCsvSubject("");
     setShowClassLevelDialog(false);
+    queryClient.invalidateQueries({ queryKey: ["/api/questions"] });
   };
 
   const deleteQuestionMutation = useMutation({
@@ -188,19 +189,19 @@ export default function AdminQuestions() {
 
   const questionsBySubject = filteredQuestions
     ? filteredQuestions.reduce((acc, question) => {
-        const subject = question.subject || "Uncategorized";
-        if (!acc[subject]) {
-          acc[subject] = {
-            questions: [],
-            classLevels: new Set<string>(),
-          };
-        }
-        acc[subject].questions.push(question);
-        if (question.classLevel) {
-          acc[subject].classLevels.add(question.classLevel);
-        }
-        return acc;
-      }, {} as Record<string, { questions: Question[]; classLevels: Set<string> }>)
+      const subject = question.subject || "Uncategorized";
+      if (!acc[subject]) {
+        acc[subject] = {
+          questions: [],
+          classLevels: new Set<string>(),
+        };
+      }
+      acc[subject].questions.push(question);
+      if (question.classLevel) {
+        acc[subject].classLevels.add(question.classLevel);
+      }
+      return acc;
+    }, {} as Record<string, { questions: Question[]; classLevels: Set<string> }>)
     : {};
 
   return (
@@ -261,24 +262,24 @@ export default function AdminQuestions() {
           </Button>
 
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild>
-            <Button data-testid="button-create-question">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Question
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <QuestionForm
-              onSuccess={() => {
-                setIsCreateOpen(false);
-                queryClient.invalidateQueries({ queryKey: ["/api/questions"] });
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+            <DialogTrigger asChild>
+              <Button data-testid="button-create-question">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Question
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <QuestionForm
+                onSuccess={() => {
+                  setIsCreateOpen(false);
+                  queryClient.invalidateQueries({ queryKey: ["/api/questions"] });
+                }}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
-      
+
       {/* CSV Help Dialog (triggered by CSV Help button) */}
       <Dialog>
         <DialogTrigger asChild>
@@ -504,12 +505,12 @@ export default function AdminQuestions() {
           {Object.entries(questionsBySubject).map(([subject, { questions: subjectQuestions, classLevels }]) => (
             <AccordionItem value={subject} key={subject} className="mb-4 rounded-lg border bg-card">
               <AccordionTrigger className="p-6 text-left hover:no-underline">
-                  <div className="flex w-full flex-col items-start">
-                      <h3 className="text-lg font-semibold text-card-foreground">{subject}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                          Class Levels: {Array.from(classLevels).join(', ')}
-                      </p>
-                  </div>
+                <div className="flex w-full flex-col items-start">
+                  <h3 className="text-lg font-semibold text-card-foreground">{subject}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Class Levels: {Array.from(classLevels).join(', ')}
+                  </p>
+                </div>
               </AccordionTrigger>
               <AccordionContent className="p-6 pt-0">
                 <Table>
@@ -567,8 +568,8 @@ export default function AdminQuestions() {
                               question.difficulty === "easy"
                                 ? "default"
                                 : question.difficulty === "medium"
-                                ? "secondary"
-                                : "destructive"
+                                  ? "secondary"
+                                  : "destructive"
                             }
                           >
                             {question.difficulty}
@@ -651,7 +652,7 @@ function QuestionForm({ onSuccess }: { onSuccess: () => void }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const submitData = { ...formData };
     if (formData.questionType === "true-false") {
       submitData.options = undefined;
@@ -668,7 +669,7 @@ function QuestionForm({ onSuccess }: { onSuccess: () => void }) {
         return;
       }
     }
-    
+
     createQuestionMutation.mutate(submitData);
   };
 
