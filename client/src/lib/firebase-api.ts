@@ -10,7 +10,8 @@ import {
     where,
     getDoc,
     writeBatch,
-    documentId
+    documentId,
+    Timestamp
 } from "firebase/firestore";
 import type {
     Question,
@@ -27,7 +28,16 @@ import type {
 } from "@shared/schema";
 
 // Helper to convert Firestore doc to typed object
-const docToData = <T>(doc: any): T => ({ id: doc.id, ...doc.data() } as T);
+const docToData = <T>(doc: any): T => {
+    const data = doc.data();
+    // Convert Firestore Timestamps to JS Dates
+    Object.keys(data).forEach(key => {
+        if (data[key] instanceof Timestamp) {
+            data[key] = data[key].toDate();
+        }
+    });
+    return { id: doc.id, ...data } as T;
+};
 
 // --- Questions ---
 export const getQuestions = async (): Promise<Question[]> => {
@@ -95,7 +105,9 @@ export const getExams = async (classLevel?: string): Promise<Exam[]> => {
 
 export const getExam = async (id: string): Promise<Exam | null> => {
     const d = await getDoc(doc(db, "exams", id));
-    return d.exists() ? docToData<Exam>(d) : null;
+    if (!d.exists()) return null;
+    const data = docToData<Exam>(d);
+    return { ...data, questionIds: data.questionIds || [] };
 };
 
 export const createExam = async (exam: InsertExam): Promise<Exam> => {

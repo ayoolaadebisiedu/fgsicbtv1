@@ -131,15 +131,9 @@ export const getQueryFn = <T>({ on401: unauthorizedBehavior }: { on401: Unauthor
     }
 
     // Exams
-    if (url === "/api/exams") {
-      // Handle classLevel filter if needed, but usually it's passed as query param which is not in queryKey join usually?
-      // Wait, queryKey is ["/api/exams"] usually.
-      // If there are params, they might be in queryKey[1].
-      // But here we just join with /.
-      // If the app uses ["/api/exams", { classLevel: "..." }], then join is "/api/exams/[object Object]".
-      // We should check queryKey structure.
-      // But looking at admin-exams.tsx: queryKey: ["/api/exams"]
-      return fb.getExams() as T;
+    if (queryKey[0] === "/api/exams") {
+      const params = queryKey[1] as { classLevel?: string } | undefined;
+      return fb.getExams(params?.classLevel) as T;
     }
     match = matchPath("/api/exams/:id", url);
     if (match) {

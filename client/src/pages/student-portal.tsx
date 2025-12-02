@@ -28,7 +28,7 @@ export default function StudentPortal() {
   }, [setLocation]);
 
   const { data: exams, isLoading } = useQuery<Exam[]>({
-    queryKey: ["/api/exams"],
+    queryKey: ["/api/exams", { classLevel: student?.classLevel }],
     enabled: !!student,
   });
 

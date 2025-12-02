@@ -133,7 +133,7 @@ export default function ExamStart() {
                   <div>
                     <h3 className="font-medium">Questions</h3>
                     <p className="text-sm text-muted-foreground">
-                      This exam contains {exam.questionIds.length} questions worth a
+                      This exam contains {exam.questionIds?.length || 0} questions worth a
                       total of {exam.totalPoints} points.
                     </p>
                   </div>
