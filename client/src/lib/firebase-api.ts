@@ -105,13 +105,8 @@ export const createExam = async (exam: InsertExam): Promise<Exam> => {
         const allQuestions = await getQuestions();
         const pool = allQuestions.filter(q => q.classLevel === exam.classLevel && (!exam.subject || q.subject === exam.subject));
 
-        // Shuffle
-        for (let i = pool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [pool[i], pool[j]] = [pool[j], pool[i]];
-        }
-
-        finalExam.questionIds = pool.slice(0, exam.numberOfQuestionsToDisplay).map(q => q.id);
+        // Store ALL matching questions in the pool so sessions can pick random subsets
+        finalExam.questionIds = pool.map(q => q.id);
     }
 
     let totalPoints = 0;
@@ -208,7 +203,9 @@ export const createExamSession = async (session: InsertExamSession): Promise<Exa
     if (!exam) throw new Error("Exam not found");
 
     let sessionQuestionIds = [...exam.questionIds];
-    // Shuffle
+    // Shuffle questions for this specific session
+    // This ensures that if the exam pool (exam.questionIds) is larger than numberOfQuestionsToDisplay,
+    // each student will get a different random subset of questions.
     for (let i = sessionQuestionIds.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [sessionQuestionIds[i], sessionQuestionIds[j]] = [sessionQuestionIds[j], sessionQuestionIds[i]];
