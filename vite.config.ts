@@ -33,17 +33,10 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    host: '192.168.1.179',
+    host: '0.0.0.0',
     fs: {
       strict: true,
       deny: ["**/.*"],
-    },
-    proxy: {
-      '/api': {
-        target: 'http://192.168.1.179:5173', // Your backend server address/port
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
     },
   },
 });
