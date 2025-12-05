@@ -22,7 +22,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "dist",
+    outDir: "dist/public",
     emptyOutDir: true,
     rollupOptions: {
       input: "client/index.html",
