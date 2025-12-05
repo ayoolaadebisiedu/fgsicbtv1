@@ -32,6 +32,10 @@ if (missingKeys.length > 0) {
     console.error("Please check your .env file.");
 }
 
+if (!firebaseConfig.projectId) {
+  throw new Error("Firebase project ID is not defined. Please set VITE_FIREBASE_PROJECT_ID in your environment variables.");
+}
+
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firestore with offline persistence

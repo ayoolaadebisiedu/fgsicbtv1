@@ -65,38 +65,38 @@ export default function ExamSessionPage() {
   });
 
   useEffect(() => {
-    if (session) {
+    if (session && exam) {
       setAnswers(session.answers || {});
       setCurrentQuestionIndex(session.currentQuestionIndex || 0);
 
-      if (session.timeRemaining !== null) {
-        setTimeRemaining(session.timeRemaining);
-      } else if (exam) {
-        const examDurationSeconds = exam.duration * 60;
-        const elapsedSeconds = session.startedAt
-          ? Math.floor((Date.now() - new Date(session.startedAt).getTime()) / 1000)
-          : 0;
-        const remaining = Math.max(0, examDurationSeconds - elapsedSeconds);
-        setTimeRemaining(remaining);
-      }
-    }
-  }, [session, exam]);
-
-  useEffect(() => {
-    if (timeRemaining <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
+      const examDurationSeconds = exam.duration * 60;
+      const elapsedSeconds = session.startedAt
+        ? Math.floor((Date.now() - new Date(session.startedAt).getTime()) / 1000)
+        : 0;
+      const initialTime = session.timeRemaining ?? Math.max(0, examDurationSeconds - elapsedSeconds);
+      setTimeRemaining(initialTime);
+      
+      if (initialTime <= 0) {
+        if (!session.isCompleted) {
           handleAutoSubmit();
-          return 0;
         }
-        return prev - 1;
-      });
-    }, 1000);
+        return;
+      };
 
-    return () => clearInterval(timer);
-  }, [timeRemaining]);
+      const timerId = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev <= 1) {
+            clearInterval(timerId);
+            handleAutoSubmit();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timerId);
+    }
+  }, [session, exam, handleAutoSubmit]);
 
   const saveProgressMutation = useMutation({
     mutationFn: async (data: { answers: Record<string, string>; currentQuestionIndex: number }) => {

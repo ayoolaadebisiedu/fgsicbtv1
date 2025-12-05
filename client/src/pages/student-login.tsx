@@ -33,26 +33,40 @@ export default function StudentLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div className="w-full max-w-md p-4">
-        <Card>
-          <CardContent>
-            <h2 className="text-lg font-semibold mb-4">Student Login</h2>
+        <Card className="shadow-lg">
+          <CardContent className="p-8">
+            <div className="flex justify-center mb-6">
+              <img src="/logo.png" alt="Faith Immaculate Academy" className="w-24 h-24" />
+            </div>
+            <h1 className="text-2xl font-bold text-center mb-2">Faith Immaculate Academy</h1>
+            <p className="text-muted-foreground text-center mb-8">Student Portal Login</p>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <Label htmlFor="name">Student Name</Label>
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your full name"
+                  className="mt-1"
+                />
               </div>
-              <div className="mb-4">
+              <div className="mb-6">
                 <Label htmlFor="studentId">Student ID</Label>
-                <Input id="studentId" value={studentId} onChange={(e) => setStudentId(e.target.value)} />
+                <Input
+                  id="studentId"
+                  value={studentId}
+                  onChange={(e) => setStudentId(e.target.value)}
+                  placeholder="Enter your student ID"
+                  className="mt-1"
+                />
               </div>
-              {error && <p className="text-destructive mb-4">{error}</p>}
-              <div className="flex justify-end">
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Logging in..." : "Login"}
-                </Button>
-              </div>
+              {error && <p className="text-destructive text-center mb-4">{error}</p>}
+              <Button type="submit" disabled={loading} className="w-full">
+                {loading ? "Logging in..." : "Login"}
+              </Button>
             </form>
           </CardContent>
         </Card>
